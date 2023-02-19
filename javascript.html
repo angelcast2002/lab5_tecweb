@@ -1,0 +1,166 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <script type="application/javascript">
+
+      /*
+        Rubrica:
+        (10 puntos) Por limitar la cantidad de caracteres permitidos a 140 en cada mensaje 
+        (10 puntos) Por colocar el campo de texto para escribir el mensaje en la parte inferior de la pantalla
+        (10 puntos) Auto-refresh de la lista de mensajes
+        (10 puntos) Por agregar hacer "submit" del mensaje utilizando "Enter"
+        (20 puntos) Por preservar el scroll después de recibir nuevos mensajes 
+
+      */
+      const ul = document.createElement('ul')
+
+      const form = document.createElement('form')
+      const usuario = document.createElement('input')
+      const mensaje = document.createElement('input')
+      const enviar = document.createElement('button')
+      usuario.placeholder = 'Nombre'
+      mensaje.placeholder = 'Mensaje'
+
+      mensaje.style.marginLeft = '10px'
+      usuario.style.marginLeft = '10px'
+      enviar.style.marginLeft = '10px'
+      mensaje.style.width = '55%'
+      usuario.style.width = '30%'
+      enviar.style.width = '10%'
+
+      ul.style.wordBreak = 'break-word'
+
+      mensaje.style.marginTop = '15px'
+      usuario.style.marginTop = '15px'
+      enviar.style.marginTop = '15px'
+
+      mensaje.style.marginBottom = '15px'
+      usuario.style.marginBottom = '15px'
+      enviar.style.marginBottom = '15px'
+
+      ul.style.margin = '0px'
+      ul.style.paddingBottom = '10px'
+      ul.style.paddingTop = '10px'
+      ul.style.marginRight = '10px'
+      ul.style.listStyleImage = "url('uvg10.jpg')"
+      document.body.style.margin = '0px'
+     
+
+
+      
+
+      form.style.position = 'sticky'
+      form.style.left = '0px'
+      form.style.bottom = '0px'
+      form.style.margin = '0px'
+
+      enviar.append('Enviar')
+
+      
+      form.append(usuario)
+      form.append(mensaje)
+      form.append(enviar)
+
+      var respuestaAnterior = 0
+      var error = 0
+
+      enviar.addEventListener('click', async (event) => {
+        event.preventDefault()
+        await publicarMensaje(mensaje.value, usuario.value)
+        await obtenerMensajes()
+        const scroll = document.body.scrollHeight
+        document.body.scrollTop = scroll;
+      })
+
+      const publicarMensaje = async (text, user) => {
+        const cuerpo = {
+          text,
+          user
+        }
+        if (text.length === 0 || user.length === 0) {
+          error = 1 //'No se puede enviar un mensaje vacio' 
+        }
+        else if (text.length > 0  && text.length < 140) {
+          const respuesta = await fetch('http://uvgenios.online/api/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(cuerpo)
+          })
+          mensaje.value = ''
+          usuario.value = ''
+          return respuesta
+        }
+        else {
+          error = 3 //'No se puede enviar mayor a 140 caracteres o sin nombre'
+        }
+        if (error === 1){
+          alert('No se puede enviar un mensaje vacio')
+        }
+        else if (error === 3){
+          alert('No se puede enviar mayor a 140 caracteres')
+        }
+      }
+
+      const mostrarMensajes = (mensaje, usuario) => {
+        const li = document.createElement('li')
+        li.style.lineHeight = '25px'
+        const userSpan = document.createElement('span')
+        userSpan.append(`${usuario}: `)
+        userSpan.style.fontWeight = 'bold'
+        li.append(userSpan)
+        li.append(mensaje)
+        return li
+      }
+      
+
+      const obtenerMensajes = async () => {
+        const respuesta = await fetch('http://uvgenios.online/api/messages')
+        const mensajes = await respuesta.json()
+
+        //const mensajesHTTPS = mensajes.forEach((mensaje) => replaceURLWithHTMLLinks(mensaje.text))
+
+        const lis = mensajes.map((mensaje) => mostrarMensajes(mensaje.text, mensaje.user))
+        //console.log(lis)
+        //lis.forEach((li)) => console.log(li.text))
+        
+        //const mensajesHTTPS = lis.forEach((lis) => replaceURLWithHTMLLinks(lis.text))
+
+        if (respuestaAnterior === 0){
+          
+          lis.forEach((li) => ul.append(li))
+          respuestaAnterior = lis.length
+          const scroll = document.body.scrollHeight
+          document.body.scrollTop = scroll;
+        }
+        else if(respuestaAnterior !== lis.length){
+          respuestaAnterior = lis.length
+          ul.append(lis[lis.length - 1])
+          
+        }
+        
+      }
+
+      const Autorefresh = () => {
+
+        setInterval('obtenerMensajes()', 1000)
+      }
+
+      /*function replaceURLWithHTMLLinks(text)
+      {
+        var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(exp,"<a href='$1'>$1</a>"); 
+      }*/
+
+      Autorefresh()
+      ul.style.backgroundColor = '#6EBFB5'
+      document.body.style.backgroundColor = '#6EBFB5'
+      form.style.backgroundColor = '#24A19C'
+      
+      document.body.append(ul)
+      document.body.append(form)
+    </script>
+  </body>
+</html>
