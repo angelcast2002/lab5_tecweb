@@ -24,7 +24,7 @@
 
       mensaje.style.marginLeft = '10px'
       usuario.style.marginLeft = '10px'
-      enviar.style.marginLeft = '10px'
+      enviar.style.marginLeft = '15px'
       mensaje.style.width = '55%'
       usuario.style.width = '30%'
       enviar.style.width = '10%'
@@ -43,7 +43,11 @@
       ul.style.paddingBottom = '10px'
       ul.style.paddingTop = '10px'
       ul.style.marginRight = '10px'
-      ul.style.listStyleImage = "url('uvg10.jpg')"
+      ul.style.listStyle = 'none'
+      ul.style.display = 'flex'
+      ul.style.flexDirection = 'column'
+      ul.style.justifyContent = 'center'
+      ul.style.alignItems = 'baseline'
       document.body.style.margin = '0px'
      
 
@@ -55,6 +59,7 @@
       form.style.bottom = '0px'
       form.style.margin = '0px'
 
+
       enviar.append('Enviar')
 
       
@@ -62,8 +67,10 @@
       form.append(mensaje)
       form.append(enviar)
 
-      var respuestaAnterior = 0
-      var error = 0
+      let respuestaAnterior = 0
+      let error = 0
+      let usuarioAnterior = ''
+      let ladoAnterior = 0
 
       enviar.addEventListener('click', async (event) => {
         event.preventDefault()
@@ -105,14 +112,43 @@
       }
 
       const mostrarMensajes = (mensaje, usuario) => {
-        const li = document.createElement('li')
-        li.style.lineHeight = '25px'
-        const userSpan = document.createElement('span')
-        userSpan.append(`${usuario}: `)
-        userSpan.style.fontWeight = 'bold'
-        li.append(userSpan)
-        li.append(mensaje)
-        return li
+        
+          const li = document.createElement('li')
+          li.style.lineHeight = '25px'
+          const userSpan = document.createElement('span')
+          userSpan.append(`${usuario}: `)
+          userSpan.style.fontWeight = 'bold'
+          if (usuarioAnterior === usuario) {
+            if (ladoAnterior === 1){
+              li.style.alignSelf = 'flex-start'
+            }
+            else {
+              li.style.alignSelf = 'flex-end'
+            }
+          } else {
+            if (ladoAnterior === 1){
+              li.style.alignSelf = 'flex-end'
+              ladoAnterior = 0
+            }
+            else {
+              li.style.alignSelf = 'flex-start'
+              ladoAnterior = 1
+            }
+          }
+          li.style.paddingLeft = '10px'
+          li.style.paddingRight = '10px'
+          li.style.paddingTop = '15px'
+          li.style.paddingBottom = '15px'
+          li.style.marginBottom = '10px'
+          li.style.marginTop = '10px'
+          li.style.borderRadius = '10px'
+          li.style.backgroundColor = '#e6e6e6'
+          li.append(userSpan)
+          li.append(mensaje)
+          usuarioAnterior = usuario
+
+          return li
+
       }
       
 
@@ -158,6 +194,10 @@
       ul.style.backgroundColor = '#6EBFB5'
       document.body.style.backgroundColor = '#6EBFB5'
       form.style.backgroundColor = '#24A19C'
+      form.style.borderTopLeftRadius = '10px'
+      form.style.borderTopRightRadius = '10px'
+      form.style.paddingRight = '50px'
+      form.style.paddingLeft = '50px'
       
       document.body.append(ul)
       document.body.append(form)
