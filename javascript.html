@@ -112,42 +112,86 @@
       }
 
       const mostrarMensajes = (mensaje, usuario) => {
-        
-          const li = document.createElement('li')
-          li.style.lineHeight = '25px'
-          const userSpan = document.createElement('span')
-          userSpan.append(`${usuario}: `)
-          userSpan.style.fontWeight = 'bold'
-          if (usuarioAnterior === usuario) {
-            if (ladoAnterior === 1){
-              li.style.alignSelf = 'flex-start'
-            }
-            else {
-              li.style.alignSelf = 'flex-end'
-            }
-          } else {
-            if (ladoAnterior === 1){
-              li.style.alignSelf = 'flex-end'
-              ladoAnterior = 0
-            }
-            else {
-              li.style.alignSelf = 'flex-start'
-              ladoAnterior = 1
-            }
-          }
-          li.style.paddingLeft = '10px'
-          li.style.paddingRight = '10px'
-          li.style.paddingTop = '15px'
-          li.style.paddingBottom = '15px'
-          li.style.marginBottom = '10px'
-          li.style.marginTop = '10px'
-          li.style.borderRadius = '10px'
-          li.style.backgroundColor = '#e6e6e6'
-          li.append(userSpan)
-          li.append(mensaje)
-          usuarioAnterior = usuario
 
-          return li
+        const li = document.createElement('li')
+        li.style.lineHeight = '25px'
+        const userSpan = document.createElement('span')
+        userSpan.append(`${usuario}: `)
+        userSpan.style.fontWeight = 'bold'
+        if (usuarioAnterior === usuario) {
+          if (ladoAnterior === 1){
+            li.style.alignSelf = 'flex-start'
+          }
+          else {
+            li.style.alignSelf = 'flex-end'
+          }
+        } else {
+          if (ladoAnterior === 1){
+            li.style.alignSelf = 'flex-end'
+            ladoAnterior = 0
+          }
+          else {
+            li.style.alignSelf = 'flex-start'
+            ladoAnterior = 1
+          }
+        }
+        li.style.paddingLeft = '10px'
+        li.style.paddingRight = '10px'
+        li.style.paddingTop = '15px'
+        li.style.paddingBottom = '15px'
+        li.style.marginBottom = '10px'
+        li.style.marginTop = '10px'
+        li.style.borderRadius = '10px'
+        li.style.backgroundColor = '#e6e6e6'
+        li.append(userSpan)
+        if(mensaje.endsWith('jpg') || mensaje.endsWith('png') || mensaje.endsWith('jpeg') || mensaje.endsWith('gif')){
+          const img = document.createElement('img')
+          img.src = mensaje
+          img.style.width = '360px'
+          img.style.height = 'auto'
+          img.style.borderRadius = '10px'
+          img.onerror = function() {
+            img.src = 'https://www.abc.net.au/news/image/114356-3x2-940x627.jpg'
+          }
+          li.append(img)
+        }
+        else if(mensaje.startsWith('http') || mensaje.startsWith('www') || mensaje.startsWith('https')){
+          iframe = document.createElement('iframe')
+          button_open = document.createElement('button')
+          button_open.append('Abrir enlace')
+          iframe.src = mensaje
+          iframe.style.border = '1px solid black'
+          iframe.style.boxshadow = '0px 0px 10px 0px rgba(0,0,0,0.75)'
+          iframe.style.width = '100%'
+          iframe.style.height = '100%'
+
+          
+          button_open.style.width = '360px'
+          button_open.style.height = 'auto'
+          button_open.style.borderRadius = '10px'
+          button_open.style.border = 'none'
+          button_open.style.backgroundColor = '#e6e6e6'
+          button_open.style.color = 'black'
+          button_open.style.fontWeight = 'bold'
+          button_open.style.fontSize = '15px'
+          button_open.style.cursor = 'pointer'
+
+          iframe.addEventListener('click', () => {
+            window.open(mensaje, '_blank')
+          })
+          button_open.addEventListener('click', () => {
+            window.open(mensaje, '_blank')
+          })
+
+          li.append(button_open)
+          li.append(iframe)
+        }
+        else{
+          li.append(mensaje)
+        }
+        usuarioAnterior = usuario
+
+        return li
 
       }
       
@@ -156,13 +200,9 @@
         const respuesta = await fetch('http://uvgenios.online/api/messages')
         const mensajes = await respuesta.json()
 
-        //const mensajesHTTPS = mensajes.forEach((mensaje) => replaceURLWithHTMLLinks(mensaje.text))
 
         const lis = mensajes.map((mensaje) => mostrarMensajes(mensaje.text, mensaje.user))
-        //console.log(lis)
-        //lis.forEach((li)) => console.log(li.text))
         
-        //const mensajesHTTPS = lis.forEach((lis) => replaceURLWithHTMLLinks(lis.text))
 
         if (respuestaAnterior === 0){
           
@@ -183,12 +223,6 @@
 
         setInterval('obtenerMensajes()', 1000)
       }
-
-      /*function replaceURLWithHTMLLinks(text)
-      {
-        var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-        return text.replace(exp,"<a href='$1'>$1</a>"); 
-      }*/
 
       Autorefresh()
       ul.style.backgroundColor = '#6EBFB5'
