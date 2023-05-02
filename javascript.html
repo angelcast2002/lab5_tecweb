@@ -89,7 +89,7 @@
           error = 1 //'No se puede enviar un mensaje vacio' 
         }
         else if (text.length > 0  && text.length < 140) {
-          const respuesta = await fetch('http://uvgenios.online/api/messages', {
+          const respuesta = await fetch('https://uvgenios.online/api/messages', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -197,7 +197,7 @@
       
 
       const obtenerMensajes = async () => {
-        const respuesta = await fetch('http://uvgenios.online/api/messages')
+        const respuesta = await fetch('https://uvgenios.online/api/messages')
         const mensajes = await respuesta.json()
 
 
